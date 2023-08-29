@@ -2,6 +2,7 @@ module Padrino
   module WebSockets
     module Faye
       class EventManager < BaseEventManager
+      include Helpers
         def initialize(channel, user, ws, event_context, &block)
           ws.on :open do |event|
             self.on_open event #&method(:on_open)
@@ -27,9 +28,17 @@ module Padrino
         ##
         # Write a message to the WebSocket.
         #
-        def self.write(message, ws)
-          ws.send ::Oj.dump(message)
+        def self.write(message, ws, serialize = true)
+          if serialize 
+            ws.send ::Oj.dump(message)
+          else
+            ws.send message
+          end
         end
+
+        def send_message(message, serialize = true)
+          Padrino::WebSockets::Faye::EventManager.send_message(@channel,@user,message,serialize)
+       end
 
         protected
           ##

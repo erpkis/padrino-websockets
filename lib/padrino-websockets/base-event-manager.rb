@@ -139,8 +139,9 @@ module Padrino
           @@pub_sub.broadcast(channel, message, except)
         end
 
-        def send_message(channel, user, message)
-          @@pub_sub.send_message(channel, user, message)
+        def send_message(channel, user, message, serialize = true)
+          logger.debug "Sending message: #{message} to user: #{user} on channel: #{channel}. Message"
+          write message, @@connections[channel][user], serialize
         end
 
         ##
